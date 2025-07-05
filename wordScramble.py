@@ -2,13 +2,13 @@
 The purpose of this program is to create a word scramble document using words pulled from existing lists in the SpellingQuiz repository (https://github.com/Monkiko/SpellingQuiz).
 
 Created by: Ian Rivera-Leandry
-Last Updated: July 3, 2025
+Last Updated: July 4, 2025
 Version: 0.1.0
 """
 
 import os
-import requests
-from random import sample, shuffle
+import urllib.request
+from random import shuffle
 from time import sleep
 from docx import Document
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -20,7 +20,7 @@ from docx.shared import RGBColor
 
 def start():
     grade_level = str(input("Please indicate the grade level of the list being used (i.e. K, 1, 2, 3, etc.): "))
-    list_number = int(input("Please indicate the list number of the list being used: "))
+    list_number = str(input("Please indicate the list number of the list being used: "))
 
     if len(grade_level) == 1:
         readSpellingList(grade_level, list_number)
@@ -62,9 +62,43 @@ def readSpellingList(grade_level, list_number):
         case "8":
             grade = "Eighth_Grade"
     
-    with open("Tests/" + grade + "/Simplified_Lists/Spelling_List_#" + list_number + ".txt", "r") as spelling_file:
-        spellingList = []
-        spellingList = spelling_file.readlines()
+    target_url = "https://raw.githubusercontent.com/Monkiko/SpellingQuiz/refs/heads/main/Tests/" + grade + "/Simplified_Lists/Spelling_List_%23" + list_number + ".txt"
+    print(target_url)
+    with urllib.request.urlopen(target_url) as response:
+        spellingList = response.read().decode().splitlines()
 
-    spelling_file.close()
     shuffle(spellingList)
+    scrambleWords(spellingList, grade, list_number)
+
+
+def scrambleWords(spellingList, grade, list_number):
+    
+    scrambledList = []
+    for word in spellingList:
+        word = list(word)
+        shuffle(word)
+        word = ''.join(word)
+        scrambledList.append(word)
+
+    printScrambledList(scrambledList, grade, list_number)
+
+
+def printScrambledList(scrambledList, grade, list_number):
+    document = Document()
+
+    title = document.add_heading("Spelling List #" + list_number + " Word Scramble", level=0)
+    title.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    title.style.font.name = "Arial"
+    title.style.font.color.rgb = RGBColor(0, 0, 0)  # Black color
+    title.style.font.size = Pt(26)
+
+    for i in range(10):
+        list = document.add_paragraph(str(i + 1) + ") " + scrambledList[i].strip() + "\t\t\t\t______")
+        list.style.font.name = "Arial"
+        list.style.font.color.rgb = RGBColor(0, 0, 0)  # Black color
+        list.style.font.size = Pt(20)
+
+    document.save("Scrambled_Lists/" + grade + "/Spelling List #" + list_number + " WS.docx")
+    print("Spelling list saved to Scrambled_Lists/" + grade + "/Spelling List #" + list_number + " WS.docx")
+
+start()
