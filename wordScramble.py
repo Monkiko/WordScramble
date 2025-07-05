@@ -63,7 +63,6 @@ def readSpellingList(grade_level, list_number):
             grade = "Eighth_Grade"
     
     target_url = "https://raw.githubusercontent.com/Monkiko/SpellingQuiz/refs/heads/main/Tests/" + grade + "/Simplified_Lists/Spelling_List_%23" + list_number + ".txt"
-    print(target_url)
     with urllib.request.urlopen(target_url) as response:
         spellingList = response.read().decode().splitlines()
 
@@ -98,7 +97,7 @@ def printScrambledList(scrambledList, grade, list_number):
         list.style.font.color.rgb = RGBColor(0, 0, 0)  # Black color
         list.style.font.size = Pt(20)
 
-    document.save("Scrambled_Lists/" + grade + "/Spelling List #" + list_number + " WS.docx")
-    print("Spelling list saved to Scrambled_Lists/" + grade + "/Spelling List #" + list_number + " WS.docx")
+    document.save("Scrambled_Lists/" + grade + "/Spelling_List_#" + list_number + "_WS.docx")
+    print("Spelling list saved to Scrambled_Lists/" + grade + "/Spelling_List_#" + list_number + "_WS.docx")
 
 start()
